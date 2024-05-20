@@ -130,10 +130,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MondayBookingScheduler.cpp" />
-    <ClCompile Include="SundayBookingScheduler.cpp" />
     <ClCompile Include="test-main.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="TestableBookingScheduler.cpp" />
     <ClCompile Include="TestableMailSender.cpp" />
     <ClCompile Include="TestableSmsSender.cpp" />
   </ItemGroup>

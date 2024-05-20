@@ -4,8 +4,7 @@
 #include "../ResttaurantBooking/BookingScheduler.cpp"
 #include "TestableSmsSender.cpp"
 #include "TestableMailSender.cpp"
-#include "SundayBookingScheduler.cpp"
-#include "MondayBookingScheduler.cpp"
+#include "TestableBookingScheduler.cpp"
 
 using namespace std;
 using namespace testing;
@@ -15,7 +14,9 @@ protected:
 	void SetUp() override {
 		NOT_ON_THE_HOUR = getTime(2021, 3, 26, 9, 5);
 		ON_THE_HOUR = getTime(2021, 3, 26, 9, 0);
-
+		SUNDAY_DATE_TIME = getTime(2021, 3, 28, 17, 0);
+		MONDAY_DATE_TIME = getTime(2024, 6, 3, 17, 0);
+		 
 		bookingScheduler.setSmsSender(&testableSmsSender);
 		bookingScheduler.setMailSender(&testableMailSender);
 	}
@@ -34,6 +35,8 @@ public:
 
 	tm NOT_ON_THE_HOUR;
 	tm ON_THE_HOUR;
+	tm SUNDAY_DATE_TIME;
+	tm MONDAY_DATE_TIME;
 	Customer CUSTOMER{ "Fake name", "010-1234-5678" };
 	Customer CUSTOMER_WITH_MAIL{ "Fake name", "010-1234-5678", "test@test.com" };
 	const int UNDER_CAPACITY = 1;
@@ -129,8 +132,7 @@ TEST_F(BookingItem, 이메일이_있는_경우에는_이메일_발송) {
 }
 
 TEST_F(BookingItem, 현재날짜가_일요일인_경우_예약불가_예외처리) {
-	// arrange 
-	BookingScheduler* bookingScheduler = new SundayBookingSchedueler(CAPCITY_PER_HOUR);
+	BookingScheduler* bookingScheduler = new TestableBookingScheduler(CAPCITY_PER_HOUR, SUNDAY_DATE_TIME);
 
 	try {
 		// act
@@ -146,7 +148,7 @@ TEST_F(BookingItem, 현재날짜가_일요일인_경우_예약불가_예외처�
 
 TEST_F(BookingItem, 현재날짜가_일요일이_아닌경우_예약가능) {
 	// arrange 
-	BookingScheduler* bookingScheduler = new MondayBookingSchedueler(CAPCITY_PER_HOUR);
+	BookingScheduler* bookingScheduler = new TestableBookingScheduler(CAPCITY_PER_HOUR, MONDAY_DATE_TIME);
 
 	// act
 	Schedule* schedule = new Schedule{ ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITH_MAIL };
