@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include "../ResttaurantBooking/BookingScheduler.cpp"
 #include "TestableSmsSender.cpp"
+#include "TestableMailSender.cpp"
 
 using namespace std;
 using namespace testing;
@@ -14,6 +15,7 @@ protected:
 		ON_THE_HOUR = getTime(2021, 3, 26, 9, 0);
 
 		bookingScheduler.setSmsSender(&testableSmsSender);
+		bookingScheduler.setMailSender(&testableMailSender);
 	}
 public:
 	tm getTime(int year, int mon, int day, int hour, int min) {
@@ -36,6 +38,7 @@ public:
 
 	BookingScheduler bookingScheduler{ CAPCITY_PER_HOUR };
 	TestableSmsSender testableSmsSender;
+	TestableMailSender testableMailSender;
 };
 
 TEST_F(BookingItem, 예약은_정시에만_가능하다_정시가_아닌경우_예약불가) {
@@ -101,7 +104,14 @@ TEST_F(BookingItem, 예약완료시_SMS는_무조건_발송) {
 }
 
 TEST_F(BookingItem, 이메일이_없는_경우에는_이메일_미발송) {
+	// arrange 
+	Schedule* schedule = new Schedule{ ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER };
 
+	// act
+	bookingScheduler.addSchedule(schedule);
+
+	// assert
+	EXPECT_EQ(0, testableMailSender.getCountSendMailMethodIsCalled());
 }
 
 TEST_F(BookingItem, 이메일이_있는_경우에는_이메일_발송) {
