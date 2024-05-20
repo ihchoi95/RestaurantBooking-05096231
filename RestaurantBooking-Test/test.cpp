@@ -2,6 +2,7 @@
 #include "gtest/gtest.h"
 #include <stdexcept>
 #include "../ResttaurantBooking/BookingScheduler.cpp"
+#include "TestableSmsSender.cpp"
 
 using namespace std;
 using namespace testing;
@@ -86,7 +87,16 @@ TEST_F(BookingItem, 시간대별_인원제한이_있다_같은_시간대가_다�
 }
 
 TEST_F(BookingItem, 예약완료시_SMS는_무조건_발송) {
+	// arrange 
+	TestableSmsSender testableSmsSender;
+	Schedule* schedule = new Schedule{ ON_THE_HOUR, CAPCITY_PER_HOUR, CUSTOMER };
+	bookingScheduler.setSmsSender(&testableSmsSender);
 
+	// act
+	bookingScheduler.addSchedule(schedule);
+
+	// assert
+	EXPECT_EQ(true, testableSmsSender.isSendorMethodIsCalled());
 }
 
 TEST_F(BookingItem, 이메일이_없는_경우에는_이메일_미발송) {
