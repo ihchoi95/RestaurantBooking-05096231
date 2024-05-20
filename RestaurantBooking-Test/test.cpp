@@ -33,6 +33,7 @@ public:
 	tm NOT_ON_THE_HOUR;
 	tm ON_THE_HOUR;
 	Customer CUSTOMER{ "Fake name", "010-1234-5678" };
+	Customer CUSTOMER_WITH_MAIL{ "Fake name", "010-1234-5678", "test@test.com"};
 	const int UNDER_CAPACITY = 1;
 	const int CAPCITY_PER_HOUR = 3;
 
@@ -116,8 +117,7 @@ TEST_F(BookingItem, 이메일이_없는_경우에는_이메일_미발송) {
 
 TEST_F(BookingItem, 이메일이_있는_경우에는_이메일_발송) {
 	// arrange 
-	Customer customerWithMail{ "Fake name", "010-1234-5678", "test@test.com"};
-	Schedule* schedule = new Schedule{ ON_THE_HOUR, UNDER_CAPACITY, customerWithMail };
+	Schedule* schedule = new Schedule{ ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER_WITH_MAIL };
 
 	// act
 	bookingScheduler.addSchedule(schedule);
