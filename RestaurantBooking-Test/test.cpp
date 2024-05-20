@@ -19,6 +19,12 @@ public:
 		return result;
 	}
 
+	tm plusHour(tm base, int hour) {
+		base.tm_hour += hour;
+		mktime(&base);
+		return base;
+	}
+
 	tm NOT_ON_THE_HOUR;
 	tm ON_THE_HOUR;
 	Customer CUSTOMER{ "Fake name", "010-1234-5678" };
@@ -65,7 +71,18 @@ TEST_F(BookingItem, 시간대별_인원제한이_있다_같은_시간대에_Capa
 }
 
 TEST_F(BookingItem, 시간대별_인원제한이_있다_같은_시간대가_다르면_Capacity_차있어도_스케쥴_추가_성공) {
+	// arrange
+	Schedule* schedule = new Schedule{ ON_THE_HOUR, CAPCITY_PER_HOUR, CUSTOMER };
+	bookingScheduler.addSchedule(schedule);
 
+	// act
+	tm differentHour = plusHour(ON_THE_HOUR, 1);
+	Schedule* newSchedule = new Schedule{ differentHour, UNDER_CAPACITY, CUSTOMER };
+	bookingScheduler.addSchedule(newSchedule);
+
+	// assert
+	EXPECT_EQ(true, bookingScheduler.hasSchedule(schedule));
+	EXPECT_EQ(true, bookingScheduler.hasSchedule(newSchedule));
 }
 
 TEST_F(BookingItem, 예약완료시_SMS는_무조건_발송) {
